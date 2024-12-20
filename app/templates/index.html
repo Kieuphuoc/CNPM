@@ -10,11 +10,11 @@
     <!-- Sidebar -->
     <div class="sidebar">
         <nav class="">
-            <a href="#" onclick="loadData('patients')" class="btn-find">
+            <a onclick="showPatients()" class="btn-find">
                 <i class="bi bi-people"></i><span>Bệnh nhân</span>
             </a>
             <span class="divider" style="color:rgba(128, 128, 128, 0.488)">|</span>
-            <a href="#" onclick="loadData('medicine')" class="btn-find">
+            <a onclick="showMedicines()" class="btn-find">
                 <i class="bi bi-capsule-pill"></i><span>Thuốc</span>
             </a>
         </nav>
@@ -22,7 +22,8 @@
         <div class="container">
             <div class="box">
                 <form name="search">
-                    <input type="text" class="input" name="kw">
+                    <input type="hidden" id="type" name="type" value="{{ request.args.get('type', '') }}">
+                    <input type="text" class="input" id="kw" name="kw" value="{{ request.args.get('kw', '') }}">
                 </form>
             </div>
             <div class="container">
@@ -35,6 +36,7 @@
                             <th>Tên bệnh nhân</th>
                             <th>SĐT</th>
                             <th>Tuổi</th>
+                            <th>Chọn</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -43,6 +45,11 @@
                             <td>{{ x.name }}</td>
                             <td>{{ x.phone }}</td>
                             <td>{{ x.birthday }}</td>
+                            <td>
+                <!-- Nút "+" để chọn bệnh nhân -->
+                             <button class="btn btn-primary btn-sm"
+                                 onclick="fillForm('{{ x.name }}', '{{ x.phone }}')">+</button>
+                             </td>
                         </tr>
                         {% endfor %}
                         </tbody>
@@ -51,7 +58,7 @@
                 {% endif %}
 
 
-                {% if show_medicines %}
+                {% if not show_patients %}
                 <div class="table-responsive"
                      style="max-height: 500px; overflow-y: auto; border: 1px solid #ddd; margin:5px">
                     <table class="table table-striped">
@@ -60,14 +67,19 @@
                             <th>Tên thuốc</th>
                             <th>Đơn vị thuốc</th>
                             <th>Giá tiền</th>
+                            <th>Thêm</th>
                         </tr>
                         </thead>
                         <tbody>
                         {% for x in medicines %}
                         <tr>
-                            <td>{{ x.tenThuoc }}</td>
-                            <td>{{ x.donViThuoc }}</td>
-                            <td>{{ x.giaTien }}</td>
+                            <td>{{ x.name }}</td>
+                            <td>{{ x.unit }}</td>
+                            <td>{{ x.price }}</td>
+                            <td>
+                            <button class="btn btn-primary btn-sm"
+                                 onclick="addToCart({{ x.id }}, '{{ x.name }}', '{{ x.unit }}')'">+</button>
+                             </td>
                         </tr>
                         {% endfor %}
                         </tbody>
@@ -89,27 +101,27 @@
                 <div class="grid">
                     <div>
                         <label for="name-of-patient">Họ tên</label>
-                        <input id="name-of-patient" placeholder="Tên của bệnh nhân..."/>
+                        <input id="name-of-patient" placeholder="Tên của bệnh nhân..." oninput="saveFormData()"/>
                     </div>
                     <div>
-                        <label for="appointment-date">Ngày khám</label>
-                        <input id="appointment-date" placeholder="Ngày khám bệnh..."/>
+                        <label for="appointment-date" oninput="saveFormData()" >Ngày khám </label>
+                        <input id="appointment-date" placeholder="Ngày khám bệnh..." oninput="saveFormData()"/>
                     </div>
                     <div>
                         <label for="phone">Số điện thoại</label>
-                        <input id="phone" type="text"/>
+                        <input id="phone" type="text" oninput="saveFormData()"/>
                     </div>
                     <div>
-                        <label for="gender">Gender</label>
-                        <select id="gender">
+                        <label for="gender" >Gender</label>
+                        <select id="gender" onchange="saveFormData()">
                             <option>Male</option>
                             <option>Female</option>
                         </select>
                     </div>
                 </div>
-                <div>
+                <div class="du-doan-label">
                     <label for="mobile">Dự đoán bệnh</label>
-                    <input id="mobile" type="text"/>
+                    <input id="mobile" type="text" oninput="saveFormData()"/>
                 </div>
             </div>
 
@@ -118,7 +130,7 @@
             </div>
 
             <div class="table-container">
-                <table>
+                <table class="table-medicine">
                     <thead>
                     <tr>
                         <th>Số thứ tự</th>
@@ -129,28 +141,20 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>Paracetamol</td>
-                        <td>Viên</td>
-                        <td>20</td>
-                        <td>Uống 1 viên mỗi 4 giờ</td>
+                    {% for c in session['cart'].values() %}
+                    <tr id="cart{{ c.id }}">
+                        <td>{{ c.id }}</td>
+                        <td>{{ c.name }}</td>
+                        <td>{{ c.unit }}</td>
+                        <td>
+                            <input onblur="updateCart({{ c.id }}, this)" type="number" value="{{ c.quantity }}" class="form-control" />
+                        </td>
+                        <td>
+                            <button class="btn btn-danger" onclick="deleteCart({{ c.id }})">&times;</button>
+                        </td>
                     </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>Amoxicillin</td>
-                        <td>Viên</td>
-                        <td>10</td>
-                        <td>Uống 1 viên 3 lần/ngày</td>
-                    </tr>
-                    <tr>
-                        <td>3</td>
-                        <td>Ibuprofen</td>
-                        <td>Viên</td>
-                        <td>15</td>
-                        <td>Uống 1 viên sau bữa ăn</td>
-                    </tr>
-                    </tbody>
+                    {% endfor %}
+                </tbody>
                 </table>
             </div>
 
@@ -162,4 +166,5 @@
     </div>
 </div>
 </div>
+
 {% endblock %}

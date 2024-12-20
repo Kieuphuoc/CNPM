@@ -24,7 +24,7 @@ html {
 
 /* Sidebar styling */
 .sidebar {
-    width: 36%;
+    width: 42%;
     background-color: white;
     height: 100vh;
     box-shadow: 0 10px 12px rgba(7, 90, 88, 0.3);
@@ -82,7 +82,7 @@ html {
 /* Main content */
 .main-content {
     width: 80%;
-    padding: 2rem 5rem;
+    padding: 1.25rem 3rem 0 6rem;
 }
 
 .form-body {
@@ -92,7 +92,7 @@ html {
 .form-container {
     background-color: white;
     padding: 2rem;
-    margin: 0 4rem;
+    margin: 0 2rem;
     border-radius: 1rem;
     box-shadow: 0 10px 12px rgba(7, 90, 88, 0.3);
 }
@@ -186,6 +186,10 @@ table th {
     position: relative;
 }
 
+.table-medicine {
+    width: 100%;
+}
+
 /* SEARCH BOX */
 
 .input {
@@ -211,4 +215,12 @@ table th {
     font-size: 26px;
     color: #ffd52d;
     transition: .2s;
+}
+
+
+
+/* MINI FIX */
+
+.du-doan-label {
+    padding-top: 1rem
 }

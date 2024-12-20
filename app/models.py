@@ -27,6 +27,7 @@ class BenhNhan(db.Model):
     birthday = Column(String(30), nullable=False)
 
 
+
 class ADMIN(User):
     id = Column(Integer, ForeignKey('user.id'), primary_key=True)
 
@@ -57,9 +58,9 @@ class LoaiThuoc(db.Model):
 
 class Thuoc(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
-    tenThuoc = Column(String(100), nullable=False)
-    donViThuoc = Column(String(50), nullable=False)
-    giaTien = Column(Float, nullable=False)
+    name = Column(String(100), nullable=False)
+    unit = Column(String(50), nullable=False)
+    price = Column(Float, nullable=False)
     loai_thuoc_id = Column(Integer, ForeignKey(LoaiThuoc.id), nullable=False)
 
 
@@ -81,15 +82,15 @@ if __name__ == '__main__':
         # l3 = LoaiThuoc(tenLoaiThuoc="Đau bụng")
         # db.session.add_all([l1,l2,l3])
 
-        # t1 = Thuoc(tenThuoc='Paracetamol', donViThuoc='Vi', giaTien=100000, loai_thuoc_id=2)
-        # t2 = Thuoc(tenThuoc='Chlorpromazin', donViThuoc='Vien', giaTien=10000, loai_thuoc_id=1)
-        # t3 = Thuoc(tenThuoc='Berberin', donViThuoc='Lo', giaTien=12000, loai_thuoc_id=3)
-        # db.session.add_all([t1, t2, t3])
+        t1 = Thuoc(name='Paracetamol', unit='Vi', price=100000, loai_thuoc_id=2)
+        t2 = Thuoc(name='Chlorpromazin', unit='Vien', price=10000, loai_thuoc_id=1)
+        t3 = Thuoc(name='Berberin', unit='Lo', price=12000, loai_thuoc_id=3)
+        db.session.add_all([t1, t2, t3])
 
-        bn1 = BenhNhan(name="Hồ Đức Trí", gender="Nam", phone="0914117036", birthday="02/02/2004")
-        bn2 = BenhNhan(name="Nguyễn Kiều Phước", gender="Nam", phone="0914117036", birthday="02/02/2004")
-        bn3 = BenhNhan(name="Hồ Kiều Phước", gender="Nam", phone="0914117036", birthday="02/02/2004")
-
-        db.session.add_all([bn1, bn2, bn3])
+        # bn1 = BenhNhan(name="Hồ Đức Trí", gender="Nam", phone="0914117036", birthday="02/02/2004")
+        # bn2 = BenhNhan(name="Nguyễn Kiều Phước", gender="Nam", phone="0914117036", birthday="02/02/2004")
+        # bn3 = BenhNhan(name="Hồ Kiều Phước", gender="Nam", phone="0914117036", birthday="02/02/2004")
+        #
+        # db.session.add_all([bn1, bn2, bn3])
 
         db.session.commit()
