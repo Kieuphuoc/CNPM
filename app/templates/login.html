@@ -8,7 +8,7 @@
     <div class="login">
          <img src="https://i.postimg.cc/MGfsBfGv/login-bg.png" alt="login image" class="login__img">
 
-         <form action="" class="container__login">
+         <form class="container__login" method="post" action="/login">
             <h1 class="login__title">Login</h1>
 
             <div class="login__content">
@@ -16,8 +16,7 @@
                   <i class="ri-user-3-line login__icon"></i>
 
                   <div class="login__box-input">
-                     <input type="email" required class="login__input" id="login-email" placeholder=" ">
-                     <label for="login-email" class="login__label">Email</label>
+                     <input type="text" name="username" required class="login__input" id="login-email" placeholder="Username">
                   </div>
                </div>
 
@@ -25,8 +24,7 @@
                   <i class="ri-lock-2-line login__icon"></i>
 
                   <div class="login__box-input">
-                     <input type="password" required class="login__input" id="login-pass" placeholder=" ">
-                     <label for="login-pass" class="login__label">Password</label>
+                     <input type="password" name="password" required class="login__input" id="login-pass" placeholder="Password">
                      <i class="ri-eye-off-line login__eye" id="login-eye"></i>
                   </div>
                </div>
@@ -42,10 +40,6 @@
             </div>
 
             <button type="submit" class="login__button">Login</button>
-
-            <p class="login__register">
-               Don't have an account? <a href="#">Register</a>
-            </p>
          </form>
     </div>
 {% endblock %}

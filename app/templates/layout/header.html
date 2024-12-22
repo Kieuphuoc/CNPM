@@ -6,9 +6,23 @@
             <li><a href="/examination">Register Now</a></li>
             <li><a href="/">About</a></li>
             <li><a href="/">Services</a></li>
+            {% if current_user.is_authenticated %}
+            <li>
+                    <a href="/">
+                        <img src="{{ current_user.avatar }}" width="35" class="rounded-circle" />
+                        Chào {{ current_user.name }}.
+                    </a>
+                </li>
+            <div>
+                <li>
+                    <a class="btn-login" href="/logout">Đăng xuất</a>
+                </li>
+            </div>
+            {% else %}
             <div>
                 <li><a href="/login" class="btn-login">Đăng nhập</a></li>
             </div>
+            {% endif %}
         </ul>
     </nav>
 </header>

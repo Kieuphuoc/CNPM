@@ -1,5 +1,9 @@
 {% extends 'layout/base.html' %}
 
+{% block title %}
+    <title>Patient Information Form</title>
+{% endblock %}
+
 {% block extra_css %}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}"/>
 {% endblock %}
@@ -78,7 +82,7 @@
                             <td>{{ x.price }}</td>
                             <td>
                             <button class="btn btn-primary btn-sm"
-                                 onclick="addToCart({{ x.id }}, '{{ x.name }}', '{{ x.unit }}')'">+</button>
+                                 onclick="addToCart({{ x.id }}, '{{ x.name }}', '{{ x.unit }}')">+</button>
                              </td>
                         </tr>
                         {% endfor %}
@@ -101,22 +105,19 @@
                 <div class="grid">
                     <div>
                         <label for="name-of-patient">Họ tên</label>
-                        <input id="name-of-patient" placeholder="Tên của bệnh nhân..." oninput="saveFormData()"/>
+                        <input id="name-of-patient" placeholder="Tên của bệnh nhân" oninput="saveFormData()" readonly />
                     </div>
                     <div>
                         <label for="appointment-date" oninput="saveFormData()" >Ngày khám </label>
-                        <input id="appointment-date" placeholder="Ngày khám bệnh..." oninput="saveFormData()"/>
+                        <input id="appointment-date" type="datetime-local" placeholder="Ngày khám bệnh" oninput="saveFormData()"/>
                     </div>
                     <div>
                         <label for="phone">Số điện thoại</label>
-                        <input id="phone" type="text" oninput="saveFormData()"/>
+                        <input id="phone" type="text" oninput="saveFormData()" readonly />
                     </div>
                     <div>
-                        <label for="gender" >Gender</label>
-                        <select id="gender" onchange="saveFormData()">
-                            <option>Male</option>
-                            <option>Female</option>
-                        </select>
+                        <label for="predict" >Dự đoán bệnh</label>
+                        <input id="predict" type="text" oninput="saveFormData()"/>
                     </div>
                 </div>
                 <div class="du-doan-label">
@@ -133,13 +134,14 @@
                 <table class="table-medicine">
                     <thead>
                     <tr>
-                        <th>Số thứ tự</th>
+                        <th>Mã thuốc</th>
                         <th>Thuốc</th>
                         <th>Đơn vị</th>
                         <th>Số lượng</th>
                         <th>Cách dùng</th>
                     </tr>
                     </thead>
+
                     <tbody>
                     {% for c in session['cart'].values() %}
                     <tr id="cart{{ c.id }}">
@@ -157,6 +159,7 @@
                 </tbody>
                 </table>
             </div>
+
 
             <div class="form-footer">
                 <button class="cancel-btn">Hủy</button>

@@ -1,11 +1,13 @@
 import math
 from flask import render_template, request, redirect, session, jsonify
 import dao
-from app import app
+from app import app, login
 from flask_login import login_user, logout_user
 from app.models import UserRole
 
-@app.route("/", methods=['get'])
+
+
+@app.route("/")
 def index():
     if 'cart' not in session:
         session['cart'] = {}
@@ -21,18 +23,34 @@ def index():
     return render_template('index.html', patients=patients, medicines=medicines, show_patients=show_patients)
 
 
+# DANG NHAP
 @app.route("/login", methods=['get', 'post'])
 def login_process():
+    if request.method.__eq__("POST"):
+        username = request.form.get('username')
+        password = request.form.get('password')
+
+        user = dao.auth_user(username=username, password=password)
+
+        if user:
+            login_user(user)
+            return redirect('/')
 
     return render_template('login.html')
 
 
-@app.route("/examination", methods=['get'])
-def examination_process():
+@app.route("/logout")
+def logout_process():
+    logout_user()
+    return redirect('/login')
 
-    return render_template('examination.html')
+
+@login.user_loader
+def get_user_by_id(user_id):
+    return dao.get_user_by_id(user_id)
 
 
+# PHIEU KHAM BENH
 @app.route('/save_form_data', methods=['POST'])
 def save_form_data():
     data = request.json  # Nhận dữ liệu dưới dạng JSON từ frontend
@@ -42,12 +60,14 @@ def save_form_data():
 
     return jsonify({"message": "Data saved successfully!"})
 
-@app.route('/get_form_data', methods=['GET'])
+
+@app.route('/get_form_data', methods=['get'])
 def get_form_data():
     # Lấy lại dữ liệu đã lưu trong session
     form_data = session.get('form_data', {})
 
     return jsonify(form_data)  # Trả lại dữ liệu dưới dạng JSON
+
 
 @app.route('/api/carts', methods=['post'])
 def add_to_cart():
@@ -56,12 +76,12 @@ def add_to_cart():
         "1": {
             "id": "1",
             "name": "..",
-            "price": 123,
+            "unit": "Vi",
             "quantity": 2
         }, "2": {
             "id": "2",
             "name": "..",
-            "price": 123,
+            "unit": "Vien",
             "quantity": 1
         }
     }
@@ -74,6 +94,8 @@ def add_to_cart():
     name = request.json.get('name')
     unit = request.json.get('unit')
 
+    print(f"Received data: id={id}, name={name}, unit={unit}")
+
     if id in cart:
         cart[id]["quantity"] += 1
     else:
@@ -85,11 +107,10 @@ def add_to_cart():
         }
 
     session['cart'] = cart
+
     print(cart)
 
-    session.modified = True
-
-    return jsonify(list(session['cart'].values()))
+    return jsonify(cart)
 
 
 @app.route('/api/carts/<id>', methods=['put'])
@@ -102,9 +123,7 @@ def update_cart(id):
 
     session['cart'] = cart
 
-    session.modified = True
-
-    return jsonify(list(session['cart'].values()))
+    return jsonify(cart)
 
 
 @app.route('/api/carts/<id>', methods=['delete'])
@@ -116,9 +135,11 @@ def delete_cart(id):
 
     session['cart'] = cart
 
-    session.modified = True
+    return jsonify(cart)
 
-    return jsonify(list(session['cart'].values()))
+
+
+
 
 if __name__ == '__main__':
     with app.app_context():

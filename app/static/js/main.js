@@ -1,4 +1,4 @@
- function showPatients() {
+function showPatients() {
             const kw = document.getElementById("kw").value;
             window.location.href = `/?kw=${encodeURIComponent(kw)}&type=patients`;
         }
@@ -18,6 +18,8 @@ function fillForm(name, phone, birthday) {
         document.getElementById('name-of-patient').value = name;
         document.getElementById('phone').value = phone;
 //        document.getElementById('birthday').value = birthday;
+        document.getElementById('name-of-patient').dispatchEvent(new Event('input'));
+         document.getElementById('phone').dispatchEvent(new Event('input'));
     }
 
 function saveFormData() {
@@ -45,31 +47,37 @@ function saveFormData() {
     }
 
     // Lấy lại dữ liệu từ API khi trang được tải
-    window.onload = function() {
+    window.onload = function () {
         fetch('/get_form_data')
-        .then(response => response.json())
-        .then(data => {
-            // Điền lại dữ liệu vào form
-            if (data.name_of_patient) {
-                document.getElementById("name-of-patient").value = data.name_of_patient;
-            }
-            if (data.phone) {
-                document.getElementById("phone").value = data.phone;
-            }
-            if (data.appointment_date) {
-                document.getElementById("appointment-date").value = data.appointment_date;
-            }
-            if (data.gender) {
-                document.getElementById("gender").value = data.gender;
-            }
-            if (data.mobile) {
-                document.getElementById("mobile").value = data.mobile;
-            }
-        })
-        .catch(error => console.error('Error:', error));
-    };
+            .then(response => response.json())
+            .then(data => {
+                if (data.name_of_patient) {
+                    document.getElementById("name-of-patient").value = data.name_of_patient;
+                }
+                if (data.phone) {
+                    document.getElementById("phone").value = data.phone;
+                }
+                if (data.appointment_date) {
+                    document.getElementById("appointment-date").value = data.appointment_date;
+                }
+                if (data.gender) {
+                    document.getElementById("gender").value = data.gender;
+                }
+                if (data.mobile) {
+                    document.getElementById("mobile").value = data.mobile;
+                }
+            })
+            .catch(error => console.error('Error:', error));
+
+};
 
  // CART
+
+function update(data) {
+    let items = document.getElementsByClassName("cart-counter");
+    for (let item of items)
+        item.innerText = data.total_quantity;
+}
 
 function addToCart(id, name, unit) {
     fetch("/api/carts", {
@@ -84,6 +92,7 @@ function addToCart(id, name, unit) {
         }
     }).then(res => res.json()).then(data => {
         update(data);
+        location.reload();
     });
 }
 
@@ -98,6 +107,7 @@ function updateCart(id, obj) {
         }
     }).then(res => res.json()).then(data => {
         update(data);
+        location.reload();
     })
 }
 
@@ -109,6 +119,7 @@ function deleteCart(id) {
             update(data);
 
             document.getElementById(`cart${id}`).style.display = "none";
+            location.reload();
         })
     }
 }
