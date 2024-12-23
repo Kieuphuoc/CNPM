@@ -1,8 +1,9 @@
 from sqlalchemy import Column, Integer, String, Float, Boolean, ForeignKey, Enum, DateTime
 from sqlalchemy.orm import relationship
-from app import db, app
+from CLINICAPP.app import db, app
 from enum import Enum as RoleEnum
 from flask_login import UserMixin
+from datetime import datetime
 import hashlib
 
 class UserRole(RoleEnum):
@@ -31,9 +32,7 @@ class BenhNhan(db.Model):
     gender = Column(String(50), nullable=False)
     phone = Column(String(10), nullable=False)
     email = Column(String(100), nullable=True)
-    birthday = Column(String(30), nullable=False)
-
-
+    age  = Column(String(30), nullable=False)
 
 class ADMIN(User):
     id = Column(Integer, ForeignKey('user.id'), primary_key=True)
@@ -62,6 +61,9 @@ class LoaiThuoc(db.Model):
     tenLoaiThuoc = Column(String(100), nullable=False)
     thuoc = relationship('Thuoc', backref='loai_thuoc', lazy=True)
 
+    def __str__(self):
+        return self.tenLoaiThuoc
+
 
 class Thuoc(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -70,15 +72,39 @@ class Thuoc(db.Model):
     price = Column(Float, nullable=False)
     loai_thuoc_id = Column(Integer, ForeignKey(LoaiThuoc.id), nullable=False)
 
-class PhieuDangKy(db.Model):
+    def __str__(self):
+        return self.name
+
+class DsKham(db.Model):
+    __tablename__ ='ds_kham'
     id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String(50), nullable=False)
-    phoneNumber = Column(String(20), nullable=False)
-    gender = Column(String(30), nullable=False)
-    birthDay = Column(String(50), nullable=False)
-    diaChi = Column(String(100), nullable=True)
+    created_date = Column(DateTime, default=datetime.now())
+    dangKyKhams = relationship("DangKyKham", backref="ds_kham")
+
+class DangKyKham(db.Model):
+    __tablename__ ='dang_ky_kham'
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    appointment_date = Column(DateTime, default=datetime.now())
+    created_date = Column(DateTime)
+    state = Column(Boolean, nullable=True)
+    benhNhan_id = Column(Integer, ForeignKey(BenhNhan.id), nullable=False)
+    dsKham_id = Column(Integer, ForeignKey(DsKham.id))
 
 
+
+class Receipt(db.Model):
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey(User.id), nullable=False)
+    created_date = Column(DateTime, default=datetime.now())
+    details = relationship('ReceiptDetails', backref='receipt', lazy=True)
+
+
+class ReceiptDetails(db.Model):
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    thuoc_id = Column(Integer, ForeignKey(Thuoc.id), nullable=False)
+    receipt_id = Column(Integer, ForeignKey(Receipt.id), nullable=False)
+    quantity = Column(Integer, default=0)
+    unit_price = Column(Float, default=0)
 
 
 if __name__ == '__main__':
@@ -197,5 +223,27 @@ if __name__ == '__main__':
         #         bangCap=doc['bangCap']
         #         )
         #     db.session.add(doctor)
+
+        # receipt1 = Receipt(user_id=1, created_date="2024-10-01")
+        # receipt2 = Receipt(user_id=2, created_date="2024-04-15")
+        # receipt3 = Receipt(user_id=3, created_date="2024-05-20")
+        # db.session.add_all([receipt1, receipt2, receipt3])
+
+        # detail1 = ReceiptDetails(receipt_id=5, thuoc_id=1, quantity=2, unit_price=100.0)
+        # detail2 = ReceiptDetails(receipt_id=6, thuoc_id=2, quantity=6, unit_price=150.0)
+        # detail3 = ReceiptDetails(receipt_id=7, thuoc_id=3, quantity=1, unit_price=200.0)
+        # db.session.add_all([detail1, detail2, detail3])
+
+        # admin_user = ADMIN(
+        #     name="Admin User",
+        #     username="adminuser",
+        #     password=str(hashlib.md5('Admin@123'.encode('utf-8')).hexdigest()),
+        #     gender="Male",
+        #     phone="1234567890",
+        #     email="admin@example.com",
+        #     avatar='https://res.cloudinary.com/dpfbtypxx/image/upload/v1734261617/pengu_iaejdc.jpg',
+        #     user_role=UserRole.ADMIN
+        # )
+        # db.session.add(admin_user)
 
         db.session.commit()
